@@ -3,12 +3,17 @@
       <nav-bar class="home-nav">
         <div slot="nav-center">购物街</div>
       </nav-bar>
-      <home-swiper :banners='banners'></home-swiper>
-      <recommend-view :recommends="recommends"></recommend-view>
-      <feature-view></feature-view>
-      <tab-control :title="['流行','新款','精选']"
-       class="tab-control" @tabClick="tabClick"></tab-control>
-      <goods-list :goods="goods['pop'].list"></goods-list>
+
+      <scroll class='content' ref='scrollRef'>
+        <home-swiper :banners='banners' class='home-swiper'></home-swiper>
+        <recommend-view :recommends="recommends"></recommend-view>
+        <feature-view></feature-view>
+        <tab-control :title="['流行','新款','精选']"
+        class="tab-control" @tabClick="tabClick"></tab-control>
+        <goods-list :goods="showGoods"></goods-list>
+      </scroll>
+      <back-top @click.native="backTopClick"></back-top>
+    
     </div>
 </template>
 
@@ -28,9 +33,14 @@ import HomeSwiper from 'views/home/childComps/HomeSwiper'
 import TabControl from 'components/content/tabcontrol/TabControl'
 //商品显示页
 import GoodsList from 'components/content/goods/GoodsList'
+//滚动组件
+import Scroll from 'components/common/scroll/Scroll'
+//回到顶部
+import BackTop from 'components/content/backTop/BackTop'
 //----------------网络请求
 //获取首页信息
 import {getHomeMultidataReq,getHomeGoodsReq} from 'network/home'
+import { log } from 'util'
 
 
 export default {
@@ -48,13 +58,16 @@ export default {
             goods: {
                 'pop': {'page': 0, 'list': []},
                 'new': {'page': 0, 'list': []},
-                'sel;': {'page': 0, 'list': []},
-            }
+                'sell': {'page': 0, 'list': []},
+            },
+            currentType: 'pop',
           
         };
     },
     computed: {
-
+      showGoods() {
+        return this.goods[this.currentType].list
+      }
     },
     created() {
       this.getHomeMultidata()
@@ -70,6 +83,27 @@ export default {
       //----------事件监听方法
       tabClick(index) {
         console.log(index);
+        switch (index) {
+          case 0:
+            this.currentType = 'pop'
+            break
+          case 1: 
+            this.currentType = 'new'    
+              break
+          case 2: 
+            this.currentType = 'sell'
+            break
+        }
+        this.getHomeGoods(this.currentType) 
+        console.log(this.currentType);
+        
+      },
+
+      backTopClick() {
+        console.log('-----------');
+        console.log(this.$refs.scrollRef.scroll);
+        
+        this.$refs.scrollRef.scroll.scrollTo(0,0,500)
         
       },
 
@@ -86,6 +120,7 @@ export default {
       getHomeGoods(type) {
         const page = this.goods[type].page + 1
           getHomeGoodsReq(type,1).then(res =>{
+          console.log('getHomeGoods');
           console.log(res);
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page +=1
@@ -99,7 +134,9 @@ export default {
         RecommendView,
         FeatureView,
         TabControl,
-        GoodsList
+        GoodsList,
+        Scroll,
+        BackTop
       
     },
 };
@@ -121,6 +158,16 @@ export default {
         top: 44px;
         background-color: #fff;
         z-index: 9
+    }
+    .home-swiper {
+      /* padding-top: 44px */
+    }
+    .content {
+      /* height: calc(100%-93px); */
+      overflow: hidden;
+      top: 44px;
+      padding-bottom: 49px;
+      /* bottom: 49px; */
     }
   
 </style>
