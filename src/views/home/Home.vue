@@ -101,9 +101,9 @@ export default {
 
       backTopClick() {
         console.log('-----------');
-        console.log(this.$refs.scrollRef.scroll);
+        console.log(this.$refs.scrollRef);
         
-        this.$refs.scrollRef.scroll.scrollTo(0,0,500)
+        this.$refs.scrollRef.scrollTo(0,0,500)
         
       },
 
@@ -166,7 +166,7 @@ export default {
       /* height: calc(100%-93px); */
       overflow: hidden;
       top: 44px;
-      padding-bottom: 49px;
+      /* padding-bottom: 49px; */
       /* bottom: 49px; */
     }
   
