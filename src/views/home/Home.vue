@@ -3,8 +3,9 @@
       <nav-bar class="home-nav">
         <div slot="nav-center">购物街</div>
       </nav-bar>
-
-      <scroll class='content' ref='scrollRef'>
+      
+      <scroll class='content' ref='scrollRef' :probe-type="3" 
+      @scroll="contentScroll" @pullingUp='loadMore' :pull-up-load="true">
         <home-swiper :banners='banners' class='home-swiper'></home-swiper>
         <recommend-view :recommends="recommends"></recommend-view>
         <feature-view></feature-view>
@@ -12,7 +13,7 @@
         class="tab-control" @tabClick="tabClick"></tab-control>
         <goods-list :goods="showGoods"></goods-list>
       </scroll>
-      <back-top @click.native="backTopClick"></back-top>
+      <back-top @click.native="backTopClick" v-show="isShowBackTop"></back-top>
     
     </div>
 </template>
@@ -61,7 +62,7 @@ export default {
                 'sell': {'page': 0, 'list': []},
             },
             currentType: 'pop',
-          
+            isShowBackTop: false
         };
     },
     computed: {
@@ -100,11 +101,22 @@ export default {
       },
 
       backTopClick() {
-        console.log('-----------');
-        console.log(this.$refs.scrollRef);
+       
+        this.$refs.scrollRef.scrollToa(0, 0, 500)
         
-        this.$refs.scrollRef.scrollTo(0,0,500)
+      },
+
+      contentScroll(position) {
+       
+          this.isShowBackTop=position.y < -1000
+       
         
+      },
+
+      loadMore() {
+        this.getHomeGoods(this.currentType);
+         console.log('上拉加载更多');
+         this.$refs.scrollRef.scroll.refresh()
       },
 
 
@@ -124,6 +136,7 @@ export default {
           console.log(res);
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page +=1
+           this.$refs.scrollRef.finishPullUp();
           })
       },
 
@@ -160,14 +173,20 @@ export default {
         z-index: 9
     }
     .home-swiper {
-      /* padding-top: 44px */
+      padding-top: 70px
     }
     .content {
-      /* height: calc(100%-93px); */
+      /* height: calc(100% - 200px); */
+       height: 600px; 
       overflow: hidden;
-      top: 44px;
-      /* padding-bottom: 49px; */
-      /* bottom: 49px; */
+      /* padding-bottom: 49px; 
+     padding-top: 44px; 
+     */
+     /* top: 144px;
+      bottom: 149px; */
+      /* top: 44px;
+      
+      bottom: 49px;*/
     }
   
 </style>

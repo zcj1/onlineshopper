@@ -17,7 +17,16 @@ export default {
     BScroll
   },
   name: 'Scroll',
-  props: {},
+  props: {
+    probeType: {
+      type: Number,
+      default: 0
+    },
+    pullUpLoad: {
+      type: Boolean,
+      default:false
+    }
+  },
   data() {
     return {
       scroll: null
@@ -26,22 +35,47 @@ export default {
   watch: {},
   computed: {},
   methods: {
-    scrollTo(x,y,time) {
+    scrollToa(x,y,time) {
       
       this.scroll.scrollTo(x,y,time)
+    },
+
+    finishPullUp() {
+      this.scroll.finishPullUp()
     }
+
   },
   created() {},
   mounted() {
-  
+    //创建BScroll对象
     this.scroll = new BScroll(this.$refs.wrapper, {
+      click: true,
+      probeType: this.probeType,
+      bounce: true,
+      pullDownRefresh: {
+        threshold: 50,
+        stop: 20
+      },
+      pullUpLoad: this.pullUpLoad
+    })
+    //监听滚动
+    this.scroll.on('scroll', (position) => {
+     this.$emit('scroll',position)
       
     })
-     this.scroll.scrollTo(0,0)
+    //监听上拉事件
+    this.scroll.on('pullingUp',() => {
+     
+      this.$emit('pullingUp')
+      
+    })
+    this.scroll.refresh()
+   
     
   }
 };
 </script>
 <style  scoped>
-
+ 
+  
 </style>
