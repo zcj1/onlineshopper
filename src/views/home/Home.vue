@@ -3,14 +3,17 @@
       <nav-bar class="home-nav">
         <div slot="nav-center">购物街</div>
       </nav-bar>
-      
+
+        <tab-control :title="['流行','新款','精选']"
+        class="tab-control" @tabClick="tabClick" ref="tabControlRef" v-show="isTabShow"></tab-control>
+
       <scroll class='content' ref='scrollRef' :probe-type="3" 
       @scroll="contentScroll" @pullingUp='loadMore' :pull-up-load="true">
-        <home-swiper :banners='banners' class='home-swiper'></home-swiper>
+        <home-swiper :banners='banners' class='home-swiper' @swiperImageLoad="swiperImageLoad"></home-swiper>
         <recommend-view :recommends="recommends"></recommend-view>
         <feature-view></feature-view>
         <tab-control :title="['流行','新款','精选']"
-        class="tab-control" @tabClick="tabClick"></tab-control>
+        class="tab-control" @tabClick="tabClick" ref="tabControlRef" v-show="!isTabShow"></tab-control>
         <goods-list :goods="showGoods"></goods-list>
       </scroll>
       <back-top @click.native="backTopClick" v-show="isShowBackTop"></back-top>
@@ -62,7 +65,11 @@ export default {
                 'sell': {'page': 0, 'list': []},
             },
             currentType: 'pop',
-            isShowBackTop: false
+            isShowBackTop: false,
+            tabOffsetTop: 0,
+            isTabShow: false,
+            saveY: 0
+           
         };
     },
     computed: {
@@ -75,6 +82,7 @@ export default {
       this.getHomeGoods('pop')
     },
     mounted() {
+      const refresh= this.debounce(this.$refs.scrollRef.refresh)
 
     },
     watch: {
@@ -82,6 +90,20 @@ export default {
     },
     methods: {
       //----------事件监听方法
+      debounce(func, delay) {
+        let timer = null
+        return function (...args) {
+          if(timer) clearTimeout(timer) 
+          timer = setTimeout(() => {
+            func.apply(this,args)
+          },delay)
+        }
+      },
+       swiperImageLoad() {
+          console.log(this.$refs.tabControlRef.$el.offsetTop);
+          this.tabOffsetTop = this.$refs.tabControlRef.$el.offsetTop
+        },
+
       tabClick(index) {
         console.log(index);
         switch (index) {
@@ -108,8 +130,14 @@ export default {
 
       contentScroll(position) {
        
-          this.isShowBackTop=position.y < -1000
+        this.isShowBackTop=position.y < -1000
        
+        //吸顶
+        if((-position.y) > this.tabOffsetTop) {
+          this.isTabShow=true
+        }else {
+           this.isTabShow=false
+        }
         
       },
 
@@ -141,6 +169,20 @@ export default {
       },
 
     },
+    activated() {
+      this.$refs.scrollRef.scrollToa(0,this.saveY,1000)
+      this.$refs.scrollRef.refresh
+      console.log('home activated');
+      
+    },
+    deactivated() {
+      console.log("home deactivated");
+      
+      this.saveY = this.$refs.scrollRef.getScrollY()
+    },
+    destroyed() {
+      console.log("home destroyed");
+    },
     components: {
         NavBar,
         HomeSwiper,
@@ -160,7 +202,7 @@ export default {
         background-color: var(--color-tint);
         color: aliceblue;
         
-        position: fixed;
+        /* position: fixed; */
         left: 0;
         right: 0;
         top: 0;
@@ -172,16 +214,17 @@ export default {
         background-color: #fff;
         z-index: 9
     }
-    .home-swiper {
+    /* .home-swiper {
       padding-top: 70px
-    }
+    } */
     .content {
       /* height: calc(100% - 200px); */
-       height: 600px; 
+       height: 420px; 
       overflow: hidden;
       /* padding-bottom: 49px; 
      padding-top: 44px; 
      */
+    
      /* top: 144px;
       bottom: 149px; */
       /* top: 44px;

@@ -4,7 +4,7 @@
        <swiper :options="swiperOption" class='home-swiper'>
         <swiper-slide v-for="(slide, index) in banners" :key="index">
             <a :href="slide.link">
-                <img :src="slide.image" alt="" class='nav-swpier-img'>
+                <img :src="slide.image" alt="" class='nav-swpier-img' @load="imageLoad">
             </a> 
         </swiper-slide>
        <div class="swiper-pagination" slot="pagination"></div>
@@ -30,7 +30,8 @@ export default {
            swiperOption: {
             pagination: {
             el: '.swiper-pagination'
-            }
+            },
+            isLoad: false
           },
         };
     },
@@ -47,7 +48,14 @@ export default {
 
     },
     methods: {
-
+      imageLoad() {
+        console.log("------");
+        if(!this.isLoad) {
+          this.isLoad=true;
+          this.$emit('swiperImageLoad')
+        }
+        
+      }
     },
     components: {
       swiper,
