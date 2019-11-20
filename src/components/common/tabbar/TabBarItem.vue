@@ -2,12 +2,12 @@
     <div @click="itemClick" class='tab-bar-item'>
       <div>
         <div v-if="!isActive" >
-          <slot name="item-icon"></slot>
+          <slot name="item-icon" ></slot>
         </div>
          <div v-else>
           <slot name="item-icon-active"></slot>
         </div>
-        <div :style="activeStyle">
+        <div :style="activeStyle" class="item-text-font">
           <slot name="item-text"></slot>
         </div>
 
@@ -71,5 +71,11 @@ export default {
   .tab-bar-item img {
     width: 20px;
     height: 20px;
+    margin-top: 7px;
   }
+
+  .item-text-font {
+    font-size: 13px;
+  }
+
 </style>

@@ -29,10 +29,6 @@
           </table>
         </div>
       </div>
-      <h2>sdfasd</h2>
-       <h2>sdfasd</h2>
-        <h2>sdfasd</h2>
-         <h2>sdfasd</h2>
     </div>
 </template>
 
@@ -48,7 +44,7 @@ export default {
     },
     data() {
         return {
-
+         
         };
     },
     computed: {
@@ -62,8 +58,12 @@ export default {
     },
     filters: {
       sellCountFilter: function(value) {
-        if(value <10000) return value;
+      
+        if(value <10000) {
+          return value;
+        }else {
         return (value/10000).toFixed(1)+'万'
+        }
       }
     },
     watch: {

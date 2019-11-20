@@ -1,9 +1,13 @@
 <template>
   <div id='detail'>
-   <detail-nav-bar></detail-nav-bar>
-    <detail-swiper :top-images="topImages"></detail-swiper>
-    <detail-base-info :goods="goods" ></detail-base-info>
-    <detail-shop-info :shop="shop"></detail-shop-info>
+   <detail-nav-bar class="detail-nav"></detail-nav-bar>
+    <scroll class="content" ref="scroll">
+       <detail-swiper :top-images="topImages"></detail-swiper>
+      <detail-base-info :goods="goods" ></detail-base-info>
+      <detail-shop-info :shop="shop"></detail-shop-info>
+      <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
+     
+    </scroll>
   </div>
 </template>
 
@@ -12,6 +16,9 @@ import DetailNavBar from './childComps/DetailNavBar'
 import DetailSwiper from './childComps/DetailSwiper'
 import DetailBaseInfo from './childComps/DetailBaseInfo'
 import DetailShopInfo from './childComps/DetailShopInfo'
+import Scroll from 'components/common/scroll/Scroll'
+import DetailGoodsInfo from './childComps/DetailGoodsInfo'
+
 
 import {getDetail,Goods,Shop} from 'network/detail'
 
@@ -20,7 +27,9 @@ export default {
     DetailNavBar,
     DetailSwiper,
     DetailBaseInfo,
-    DetailShopInfo
+    DetailShopInfo,
+    Scroll,
+    DetailGoodsInfo
   },
   name: 'Detail',
   props: {},
@@ -35,13 +44,18 @@ export default {
       },
       goods: {},
       shop: {},
+      detailInfo: {}
     };
   },
   watch: {},
   computed: {
     
   },
-  methods: {},
+  methods: {
+    imageLoad() {
+      this.$refs.scroll.refresh()
+    }
+  },
   created() {
     console.log('详情页初始化');
     
@@ -51,16 +65,14 @@ export default {
       const data = res.result
       
       this.topImages =data.itemInfo.topImages
-      console.log(this.topImages)
+  
       
       this.goods = new Goods(data.itemInfo,data.columns,data.shopInfo.services)
-       console.log('============');
-        console.log(new Shop(data.shopInfo) );
+      
       this.shop = new Shop(data.shopInfo)
-      console.log('============');
-      console.log(this.shop );
       
-      
+      this.detailInfo = data.detailInfo;
+    
       
       
     })
@@ -69,4 +81,20 @@ export default {
 };
 </script>
 <style  scoped>
+  #detail {
+    position: relative;
+    z-index: 9;
+    background-color: #fff;
+    height: 100vh;
+  }
+
+  .content {
+    height: calc(100% - 44px);
+  }
+
+  .detail-nav {
+    position: relative;
+    z-index: 9;
+    background-color: #fff;
+  }
 </style>

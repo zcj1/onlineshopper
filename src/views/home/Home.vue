@@ -1,5 +1,5 @@
 <template>
-    <div id="home">
+    <div id="home" class="home-root">
       <nav-bar class="home-nav">
         <div slot="nav-center">购物街</div>
       </nav-bar>
@@ -218,8 +218,8 @@ export default {
       padding-top: 70px
     } */
     .content {
-      /* height: calc(100% - 200px); */
-       height: 420px; 
+       height: calc(100% - 93px); 
+     
       overflow: hidden;
       /* padding-bottom: 49px; 
      padding-top: 44px; 
@@ -230,6 +230,9 @@ export default {
       /* top: 44px;
       
       bottom: 49px;*/
+    }
+    .home-root {
+      height: 100vh;
     }
   
 </style>

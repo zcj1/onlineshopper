@@ -21,7 +21,9 @@ export default {
     props: {
       topImages: {
         type: Array,
-        default: []
+        default() {
+          return []
+        }
       }
     },
     data() {
